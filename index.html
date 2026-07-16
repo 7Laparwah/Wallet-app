@@ -3,11 +3,10 @@
 <head>
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="HandheldFriendly" content="true">
 <meta name="theme-color" content="#0b0e14">
 <title>Tracker</title>
-
-
 
 
 <!-- Fonts: preconnect + display=swap so text shows instantly with fallback font -->
@@ -40,7 +39,19 @@ html,body{
  background:#0b0e14;
  color:#f5f6f8;
  height:100%;
+ width:100%;
+ max-width:100vw;
+ overflow-x:hidden;
  -webkit-tap-highlight-color:transparent;
+ touch-action:manipulation; /* double-tap se accidental zoom rokta hai */
+ -webkit-text-size-adjust:100%;
+ text-size-adjust:100%;
+}
+/* Mobile browsers input font-size 16px se kam hone par khud-ba-khud zoom kar dete hain.
+   Ye rule sabhi input/textarea/select ka effective font-size 16px+ force karta hai,
+   taaki focus karte hi app zoom-in na ho aur baaki boxes bhi distort na hon. */
+input,textarea,select{
+ font-size:16px !important;
 }
 .app{
  max-width:480px;
@@ -51,6 +62,45 @@ html,body{
 }
 h1,h2,h3,.brand,.amount-big{font-family:ui-sans-serif;}
 ::-webkit-scrollbar{width:0;height:0;}
+
+/* ===== Notifications ON/OFF pill toggle (Profile screen) ===== */
+.notif-toggle{
+ position:relative;
+ width:92px;height:34px;
+ border-radius:20px;
+ background: linear-gradient(176deg, #cacfd4, #8a96a5);
+ border:1.5px solid #8f96a0;
+ cursor:pointer;
+ display:flex;align-items:center;
+ flex-shrink:0;
+ user-select:none;
+ box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
+}
+.notif-toggle-thumb{
+ position:absolute;
+ top:2px;left:2px;
+ width:46px;height:27px;
+ border-radius:16px;
+ background:linear-gradient(180deg,#ffffff,#e2e5e9);
+ box-shadow:0 2px 5px rgba(0,0,0,.28);
+ transition:left .2s ease;
+ z-index:1;
+}
+.notif-toggle.is-off .notif-toggle-thumb{ left:44px; }
+.notif-toggle-on,.notif-toggle-off{
+ position:relative;
+ z-index:2;
+ flex:1;
+ text-align:center;
+ font-size:10.5px;
+ font-weight:700;
+ letter-spacing:.3px;
+ transition:color .2s ease;
+}
+.notif-toggle-on{ color:#2b2f36; }
+.notif-toggle-off{ color:#8b9099; }
+.notif-toggle.is-off .notif-toggle-on{ color:#8b9099; }
+.notif-toggle.is-off .notif-toggle-off{ color:#e8792e; }
 
 /* ===== Status / Top spacing ===== */
 .statusbar{height:14px;}
@@ -299,11 +349,11 @@ h1,h2,h3,.brand,.amount-big{font-family:ui-sans-serif;}
 .menu-item .mtext{flex:1;font-size:14px;font-weight:600;}
 .menu-item .chev{color:#5a606c;}
 .menu-item.danger .mico{background:rgba(240,100,100,.12);color:#f06464;}
-.menu-item.danger .mtext{color:#f06464;}
+.menu-item.danger .mtext{color:#f06464;text-align: center; }
 
 /* ===== Bottom Nav ===== */
 .bottom-nav{
- position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+ position:fixed;bottom:10px;left:50%;transform:translateX(-50%);
  width:calc(100% - 28px);max-width:452px;
  background:#12151d;border:1px solid #1f2430;border-radius:24px;
  display:flex;align-items:center;justify-content:space-around;
@@ -318,7 +368,7 @@ h1,h2,h3,.brand,.amount-big{font-family:ui-sans-serif;}
 .nav-btn span{font-size:10px;font-weight:700;letter-spacing:.2px;}
 .nav-btn.active{color:#e8b64c;}
 .nav-plus{
- width:50px;height:50px;border-radius:50%;
+ width:60px;height:60px;border-radius:50%;
  background:linear-gradient(135deg,#f0c060,#e8b64c);
  display:flex;align-items:center;justify-content:center;color:#1a1305;
  font-size:24px;box-shadow:0 10px 24px rgba(232,182,76,.45);margin-top:-22px;flex:0 0 auto;
@@ -927,7 +977,7 @@ body.light-theme #loadingPage .loader {
 .party-total-bar .ptb-amt{font-size:18px;font-weight:800;}
 .party-total-bar .ptb-give .ptb-amt{color:#f06464;}
 .party-total-bar .ptb-take .ptb-amt{color:#3ddc84;}
-.party-total-bar .ptb-status-msg{font-size:12.5px;font-weight:700;text-align:center;white-space:nowrap;}
+.party-total-bar .ptb-status-msg{font-size:12.5px;font-weight:700;text-align:right;white-space:normal;word-break:break-word;min-width:0;}
 .party-total-bar .ptb-status-msg.status-settled{color:#3ddc84;}
 .party-total-bar .ptb-status-msg.status-pay{color:#f06464;}
 .party-total-bar .ptb-status-msg.status-receive{color:#f0c060;}
@@ -941,11 +991,11 @@ body.light-theme #pinLockScreen { background:linear-gradient(180deg, #f4f6fb, #f
 body.light-theme #pinLockScreen .pinTitle { font-size:21px !important; font-weight:800 !important; color:#1a2340 !important; margin-bottom:6px !important; font-family:ui-sans-serif !important; letter-spacing:.2px !important; }
 body.light-theme #pinLockScreen .pinSub { font-size:15px !important; color:#64748b !important; margin-bottom:30px !important; }
 body.light-theme .pinDots span.filled { background:#ffef0c !important; border-color:#1a2340 !important; box-shadow:0 0 0 4px rgba(58,92,204,.15) !important; transform:scale(1.1) !important; }
-body.light-theme .pinPad button { width: 64px !important; height: 64px !important; margin: 0 auto !important; border-radius: 50% !important; border: 1px solid #e2e8f2 !important; background:#ffffff !important; color:#1a2340 !important; font-size: 20px !important; font-weight: 600 !important; cursor: pointer !important; font-family: 'Inter', sans-serif !important; }
+body.light-theme .pinPad button { width: 50px !important; height: 50px !important; margin: 0 auto !important; border-radius: 50% !important; border: 1px solid #e2e8f2 !important; background:#ffffff !important; color:#1a2340 !important; font-size: 20px !important; font-weight: 600 !important; cursor: pointer !important; font-family: 'Inter', sans-serif !important; }
 body.light-theme .pinPad button:hover { background:#eef1f7 !important; border-color:#e2e8f2 !important; }
 body.light-theme .pinPad button.pinClear { font-size:18px !important; color:#6b7280 !important; background:transparent !important; border:none !important; box-shadow:none !important; font-weight:600 !important; }
 body.light-theme .greet .sub { color:#fafafa !important; font-size:13px !important; margin-top:4px !important; display:flex !important; align-items:center !important; gap:4px !important; }
-body.light-theme .icon-circle { width:40px !important; height:40px !important; border-radius:50% !important; background:transparent !important; display:flex !important; align-items:right !important; justify-content:center !important; color:#ffffff  !important; font-size:18px !important; !important; }
+body.light-theme .icon-circle { width:40px !important; height:40px !important; border-radius:50% !important; background:transparent !important; display:flex !important; align-items:right !important; justify-content:center !important; color:#e8ce64 !important; font-size:18px !important; !important; }
 body.light-theme .balance-card { background:linear-gradient(135deg,#ffffff 0%,#f4f7fc 100%) !important; border:1px solid #e2e8f2 !important; box-shadow:0 8px 24px rgba(30,60,120,.06) !important; border-radius:20px !important; padding:20px !important; margin-bottom:16px !important; position:relative !important; overflow:hidden !important; }
 body.light-theme .balance-card .label { color:#64748b !important; font-size:12px !important; font-weight:600 !important; letter-spacing:.3px !important; text-transform:uppercase !important; }
 body.light-theme .stat-card { background:#ffffff !important; border:1px solid #e2e8f2 !important; border-radius:16px !important; padding:12px 10px !important; }
@@ -953,7 +1003,7 @@ body.light-theme .stat-card .lbl { color:#64748b !important; font-size:11px !imp
 body.light-theme .txn { background:#ffffff !important; border:1px solid #e2e8f2 !important; border-radius:16px !important; padding:12px 14px !important; display:flex !important; align-items:center !important; gap:12px !important; animation:slideIn .4s cubic-bezier(.22,1,.36,1) both !important; }
 body.light-theme .txn-info .cat { color:#6b7280 !important; font-size:12px !important; margin-top:2px !important; }
 body.light-theme .txn-right .time { color:#6b7280 !important; font-size:11px !important; margin-top:2px !important; }
-body.light-theme .date-divider { color:#6b7280 !important; font-size:12px !important; font-weight:600 !important; margin:14px 0 8px !important; }
+body.light-theme .date-divider { color:#c2bb5b!important; font-size:12px !important; font-weight:600 !important; margin:14px 0 8px !important; }
 body.light-theme .pill-toggle { display:flex !important; background:#ffffff !important; border:1px solid #e2e8f2 !important; border-radius:14px !important; padding:4px !important; margin-bottom:16px !important; }
 body.light-theme .pill-toggle button { flex:1 !important; padding:10px !important; border:none !important; background:transparent !important; color:#64748b !important; font-weight:700 !important; font-size:13px !important; border-radius:11px !important; cursor:pointer !important; font-family:'Inter',sans-serif !important; transition:.2s !important; }
 body.light-theme .pill-toggle button.active { background:linear-gradient(135deg,#f0c060,#e8b64c) !important; color:#1a1305 !important; box-shadow:0 2px 8px rgba(232,182,76,.35) !important; }
@@ -973,8 +1023,8 @@ body.light-theme .profile-head .pemail { color:#fcfcfc !important; font-size:12.
 body.light-theme .menu-item { background:#ffffff !important; border:1px solid #e2e8f2 !important; border-radius:16px !important; padding:14px 16px !important; display:flex !important; align-items:center !important; gap:14px !important; margin-bottom:10px !important; cursor:pointer !important; transition:.2s !important; }
 body.light-theme .menu-item:hover { background:#eef1f7 !important; }
 body.light-theme .menu-item .mico { width:36px !important; height:36px !important; border-radius:10px !important; background:#eef1f7 !important; display:flex !important; align-items:center !important; justify-content:center !important; color:#e8b64c !important; font-size:16px !important; }
-body.light-theme .bottom-nav { position:fixed !important; bottom:14px !important; left:50% !important; transform:translateX(-50%) !important; width:calc(100% - 28px) !important; max-width:452px !important; background:#ffffff !important; border:1px solid #e2e8f2 !important; border-radius:24px !important; display:flex !important; align-items:center !important; justify-content:space-around !important; padding:10px 6px !important; box-shadow:0 18px 40px rgba(0,0,0,.5) !important; z-index:100 !important; }
-body.light-theme .nav-plus { width:50px !important; height:50px !important; border-radius:50% !important; background:linear-gradient(135deg,#f0c060,#e8b64c) !important; display:flex !important; align-items:center !important; justify-content:center !important; color:#1a1305 !important; font-size:24px !important; box-shadow:0 10px 24px rgba(232,182,76,.45) !important; margin-top:-22px !important; flex:0 0 auto !important; border:4px solid #f4f6fb !important; transition:.2s !important; }
+body.light-theme .bottom-nav { position:fixed !important; bottom:6px !important; left:50% !important; transform:translateX(-50%) !important; width:calc(100% - 28px) !important; max-width:452px !important; background:#ffffff !important; border:1px solid #e2e8f2 !important; border-radius:24px !important; display:flex !important; align-items:center !important; justify-content:space-around !important; padding:10px 6px !important; box-shadow:0 18px 40px rgba(0,0,0,.5) !important; z-index:100 !important; }
+body.light-theme .nav-plus { width:60px !important; height:60px !important; border-radius:50% !important; background:linear-gradient(135deg,#f0c060,#e8b64c) !important; display:flex !important; align-items:center !important; justify-content:center !important; color:#1a1305 !important; font-size:24px !important; box-shadow:0 10px 24px rgba(232,182,76,.45) !important; margin-top:-22px !important; flex:0 0 auto !important; border:4px solid #f4f6fb !important; transition:.2s !important; }
 body.light-theme .nav-btn.center-label { margin-top:2px !important; font-size:9px !important; color:#6b7280 !important; }
 body.light-theme .empty-state i { font-size:32px !important; color:#e2e8f2 !important; margin-bottom:12px !important; }
 body.light-theme .nav-btn { color:#6b7280 !important; }
@@ -1018,7 +1068,7 @@ body.light-theme [style*="color:#7b8aaa"] { color: #64748b !important; }
 body.light-theme [style*="color:#8b9099"] { color: #6b7280 !important; }
 body.light-theme [style*="color:#cfd3da"] { color: #475569 !important; }
 body.light-theme [style*="color:#e8eaf0"] { color: #1a2340 !important; }
-body.light-theme [style*="color:#f5f6f8"] { color: #090808 !important; }
+body.light-theme [style*="color:#f5f6f8"] { color: #000000 !important; }
 /* specific safe overrides (avoid clobbering intentional white-on-color text like badges/buttons) */
 body.light-theme [style*="color:#fff;font-weight:700;font-size:16px;"] { color:#ffffff !important; }
 body.light-theme #forgotPinLink { color:#3a5ccc !important; }body.light-theme [style*="background:black;border:none;color:#f5f6f8"] { background: #ffffff !important; }
@@ -1583,9 +1633,9 @@ body.light-theme .party-total-bar .ptb-status-msg.status-receive{ color:#c98a10 
  <div id="entriesContainer"></div>
 
  <div id="partyTotalBar" class="party-total-bar" style="display:none;">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
-   <div class="ptb-title" id="ptbPartyName" style="margin-bottom:0;">Party Totals</div>
-   <div class="ptb-status-msg" id="ptbStatusMsg"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+   <div class="ptb-title" id="ptbPartyName" style="margin-bottom:0;flex-shrink:0;">Party Totals</div>
+   <div class="ptb-status-msg" id="ptbStatusMsg" style="flex:1;min-width:0;"></div>
   </div>
   <div class="ptb-row">
    <div class="ptb-item ptb-give">
@@ -1617,15 +1667,25 @@ body.light-theme .party-total-bar .ptb-status-msg.status-receive{ color:#c98a10 
  </div>
 
  <div class="menu-item" onclick="openGoalsModal()"><div class="mico"><i class="ti ti-target"></i></div><div class="mtext">Savings &amp; Expense Goals</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
+ <div class="menu-item" style="cursor:default;">
+  <div class="mico"><i class="ti ti-bell"></i></div>
+  <div class="mtext">Notifications</div>
+  <div class="notif-toggle" id="notifToggleSwitch" onclick="toggleAppNotifications()">
+   <div class="notif-toggle-thumb"></div>
+   <span class="notif-toggle-on">ON</span>
+   <span class="notif-toggle-off">OFF</span>
+  </div>
+ </div>
+ <div class="menu-item" onclick="toggleTheme()"><div class="mico"><i class="ti ti-moon"></i></div><div class="mtext">Dark / Light Mode</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
  <div class="menu-item" onclick="toggleSyncStatusPanel()"><div class="mico"><i class="ti ti-wallet"></i></div><div class="mtext">Manage Accounts</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
  <div class="menu-item" onclick="openPartyManager()"><div class="mico"><i class="ti ti-users"></i></div><div class="mtext">Manage / Add Party</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
  <div class="menu-item" onclick="openDeletedHistory()"><div class="mico"><i class="ti ti-history"></i></div><div class="mtext">Deleted Entry History</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
  <div class="menu-item" onclick="exportDataAsJSON()"><div class="mico"><i class="ti ti-cloud-upload"></i></div><div class="mtext">Backup Data</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
  <div class="menu-item" onclick="backupToGoogleDrive()"><div class="mico"><i class="ti ti-brand-google-drive"></i></div><div class="mtext">Backup to Google Drive</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
  <div class="menu-item" onclick="triggerRestore()"><div class="mico"><i class="ti ti-cloud-download"></i></div><div class="mtext">Restore Data</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
- <div class="menu-item" onclick="toggleTheme()"><div class="mico"><i class="ti ti-moon"></i></div><div class="mtext">Dark / Light Mode</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
+ 
 
- <div class="menu-item danger" onclick="openLogoutModal()"><div class="mico"><i class="ti ti-logout"></i></div><div class="mtext">Log out</div><div class="chev"><i class="ti ti-chevron-right"></i></div></div>
+ <div class="menu-item danger" onclick="openLogoutModal()"><div class="mtext">Log out</div><div class="chev"></div></div>
 
 </div>
 
@@ -1785,7 +1845,7 @@ body.light-theme .party-total-bar .ptb-status-msg.status-receive{ color:#c98a10 
 // Firebase Console -> Project Settings -> General -> Your apps -> Web app config
 // ===== FIREBASE CONFIG (initialized lazily after UI paints) =====
 const firebaseConfig = {
-  apiKey: "AIzaSyBneDVwogH0WiEmAAvLHu_Tq862DmDOwmI",
+apiKey: "AIzaSyBneDVwogH0WiEmAAvLHu_Tq862DmDOwmI",
   authDomain: "daytoday-e6646.firebaseapp.com",
   databaseURL: "https://daytoday-e6646-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "daytoday-e6646",
@@ -2300,6 +2360,27 @@ function getCurrentMonthGoalStats() {
  return { expense, savings };
 }
 
+// Har custom goal apni khud ki party/category (goal ke "title" field) ki entries
+// se hi progress calculate kare — global total se nahi. Isse alag-alag goals
+// (jaise "Food" aur "Shopping") ek dusre ka total mix nahi karenge, har goal
+// apna alag, sahi progress dikhayega.
+function getGoalCategoryStats(categoryTitle) {
+ const now = new Date();
+ const curMonth = now.getMonth(), curYear = now.getFullYear();
+ let expense = 0, savings = 0;
+ const targetName = String(categoryTitle || '').trim().toLowerCase();
+ entries.forEach(e => {
+  const d = new Date(e.date);
+  if (d.getFullYear() !== curYear || d.getMonth() !== curMonth) return;
+  const partyName = String(e.party || 'Unknown').trim().toLowerCase();
+  if (partyName !== targetName) return; // sirf isi category/party ki entries ginenge
+  const amt = Number(e.amount) || 0;
+  if (e.type === 'expense') expense += amt;
+  else if (e.type === 'income') savings += amt;
+ });
+ return { expense, savings };
+}
+
 function renderGoalsProgress() {
  const box = document.getElementById('goalsProgressBox');
  if (!box) return;
@@ -2374,10 +2455,67 @@ function requestNotificationPermission() {
  if (Notification.permission === 'default') {
   Notification.requestPermission().catch(() => {});
  }
+ updateNotifStatusLabel();
+}
+
+// Profile > single ON/OFF pill switch par tap karne se ye chalta hai.
+// ON karte waqt — agar browser permission abhi tak nahi maangi gayi, to
+// yehi ek click (real user gesture) permission bhi maang leta hai, taaki
+// mobile browsers automatic request ko chup-chaap ignore na karein.
+// OFF karte waqt — app khud (sendAppNotification se) koi bhi notification
+// bhejna band kar deta hai, chahe browser permission "granted" hi kyu na ho.
+function toggleAppNotifications() {
+ const userDisabled = localStorage.getItem('notificationsUserDisabled') === '1';
+
+ if (userDisabled) {
+  // ---- Turning ON ----
+  localStorage.removeItem('notificationsUserDisabled');
+  renderNotifToggleSwitch();
+  if (!('Notification' in window)) {
+   showNotification('Ye browser notifications support nahi karta', 'error');
+   return;
+  }
+  if (Notification.permission === 'granted') {
+   showNotification('Notifications ON ho gaye ✓', 'success');
+   sendAppNotification('Test Notification 🔔', 'Ab se payment reminders aur goals ke notifications yahan aayenge.', 'test-notif');
+  } else if (Notification.permission === 'denied') {
+   showNotification('Notifications ON — lekin phone/browser settings me bhi allow karna hoga', 'warning');
+  } else {
+   Notification.requestPermission().then(result => {
+    if (result === 'granted') {
+     showNotification('Notifications ON ho gaye ✓', 'success');
+     sendAppNotification('Test Notification 🔔', 'Ab se payment reminders aur goals ke notifications yahan aayenge.', 'test-notif');
+    } else {
+     showNotification('Notifications ON — lekin permission allow nahi ki gayi', 'warning');
+    }
+   }).catch(() => {});
+  }
+ } else {
+  // ---- Turning OFF ----
+  localStorage.setItem('notificationsUserDisabled', '1');
+  renderNotifToggleSwitch();
+  showNotification('Notifications OFF kar diye ✓', 'success');
+ }
+}
+
+// Switch ke visual state (thumb + ON/OFF colors) ko localStorage ke
+// hisaab se sync rakhta hai — app open hote hi aur toggle karte hi.
+function renderNotifToggleSwitch() {
+ const el = document.getElementById('notifToggleSwitch');
+ if (!el) return;
+ const userDisabled = localStorage.getItem('notificationsUserDisabled') === '1';
+ el.classList.toggle('is-off', userDisabled);
+}
+
+// Backward-compat alias — purane code (jaise DOMContentLoaded init) me
+// updateNotifStatusLabel() ko call kiya gaya tha, ab wahi switch update karta hai.
+function updateNotifStatusLabel() {
+ renderNotifToggleSwitch();
 }
 
 function sendAppNotification(title, body, tag) {
  try {
+  if (localStorage.getItem('notificationsUserDisabled') === '1') return; // user ne "Turn Off Notifications" se band kiya hai
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   const options = {
    body: body,
@@ -2385,9 +2523,12 @@ function sendAppNotification(title, body, tag) {
    badge: 'icon-192.png',
    tag: tag || undefined // same tag wali purani notification replace ho jayegi, dher nahi lagegi
   };
-  // Agar service worker ready hai (PWA install ki hui hai) to uske through bhejo —
-  // mobile pe zyada reliable aur "asli app" jaisa dikhta hai
-  if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+  // Agar koi service worker ABHI is page ko actively control kar raha hai
+  // (navigator.serviceWorker.controller sirf tabhi non-null hota hai jab SW
+  // already active ho) — usi ke through bhejo, mobile PWA pe zyada reliable hota hai.
+  // Warna seedha Notification API use karo, taaki agar service worker register/ready
+  // nahi hua (ya abhi pending hai), notification atka na rahe aur turant dikhe.
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
    navigator.serviceWorker.ready.then(reg => {
     if (reg && reg.showNotification) {
      reg.showNotification(title, options);
@@ -2409,7 +2550,6 @@ function sendAppNotification(title, body, tag) {
 // notification bhejta hai — har goal ko mahine mein sirf ek baar hi notify karta hai
 function checkCustomGoalCompletions() {
  if (!customGoals || customGoals.length === 0) return;
- const { expense, savings } = getCurrentMonthGoalStats();
  const now = new Date();
  const monthKey = now.getFullYear() + '-' + now.getMonth();
 
@@ -2418,6 +2558,9 @@ function checkCustomGoalCompletions() {
 
  let changed = false;
  customGoals.filter(g => !g.archived).forEach(g => {
+  // Har goal apni khud ki category (title) ki entries se hi check ho —
+  // global total se nahi, warna sab goals ek dusre ka total mix kar dete the
+  const { expense, savings } = getGoalCategoryStats(g.title);
   const current = g.type === 'savings' ? savings : expense;
   const key = g.id + '_' + monthKey;
   if (notifiedMap[key]) return; // is mahine iske liye pehle hi bhej chuke
@@ -2566,7 +2709,6 @@ function toggleShowArchivedGoals() {
 function renderCustomGoalsList() {
  const list = document.getElementById('customGoalsList');
  if (!list) return;
- const { expense, savings } = getCurrentMonthGoalStats();
  const goalsToShow = customGoals.filter(g => !!g.archived === showArchivedGoals);
 
  const toggleBtn = document.getElementById('archivedToggleBtn');
@@ -2578,6 +2720,9 @@ function renderCustomGoalsList() {
  }
 
  list.innerHTML = goalsToShow.map(g => {
+  // Har goal ki apni category (title) ke hisaab se alag progress —
+  // ab yahan koi bhi doosre goal ka total mix nahi hoga
+  const { expense, savings } = getGoalCategoryStats(g.title);
   const current = g.type === 'savings' ? savings : expense;
   const pct = Math.min(100, Math.round((current / g.targetAmount) * 100));
   const barColor = g.type === 'expense'
@@ -4384,6 +4529,38 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// ═══════════════════════════════════════════════════════════════════════
+// ZOOM LOCK — Android WebView/APK me kabhi kabhi viewport meta tag ko
+// ignore karke pinch-zoom ya double-tap-zoom ho jata hai jisse app
+// zoom-in/zoom-out hote hue "shrink" jaisa dikhta hai. Ye teeno guards
+// -har tarah ke zoom gesture ko JS level par bhi block kar dete hain,
+// taaki sirf CSS/meta viewport par depend na karna pade.
+// ═══════════════════════════════════════════════════════════════════════
+(function lockAppZoom() {
+ // 1) Pinch-zoom (2+ finger) rokna
+ document.addEventListener('touchmove', function (e) {
+  if (e.touches && e.touches.length > 1) e.preventDefault();
+ }, { passive: false });
+
+ // 2) iOS/some WebViews ka native "gesture" zoom event rokna
+ ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (evt) {
+  document.addEventListener(evt, function (e) { e.preventDefault(); }, { passive: false });
+ });
+
+ // 3) Double-tap-zoom rokna (bina double-tap se normal tap/click todhe)
+ let lastTouchEnd = 0;
+ document.addEventListener('touchend', function (e) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) e.preventDefault();
+  lastTouchEnd = now;
+ }, { passive: false });
+
+ // 4) Ctrl/trackpad-wheel zoom rokna (kuch Android WebViews mouse/trackpad bhi bhejte hain)
+ document.addEventListener('wheel', function (e) {
+  if (e.ctrlKey) e.preventDefault();
+ }, { passive: false });
+})();
+
 // ===== INIT =====
 
 // Initialize Firebase and load data
@@ -4410,6 +4587,7 @@ document.addEventListener('DOMContentLoaded', () => {
  checkCustomGoalCompletions();
  checkAndShowReminderPopup(); // due/overdue payment reminders check (in-app popup + real notification)
  requestNotificationPermission(); // pehli baar permission maango, taaki phone-style notifications kaam karein
+ updateNotifStatusLabel(); // "Enable Notifications" menu item ka status turant sahi dikhaye
  // NOTE: renderAnalytics() skipped here — called lazily when tab opens
 
  // ── STEP 2: Setup UI state ──
@@ -5967,7 +6145,7 @@ window.addEventListener('offline', () => {
   </div>
 
   <label style="display:block;color:#ffffff85;font-size:12px;margin-bottom:6px;">Category</label>
-  <select id="goalCategorySelect" style="width:100%;box-sizing:border-box;padding:11px 12px;margin-bottom:14px;border-radius:10px;border:1px solid #232838;background:#00000085;color:#e8eaf0;font-size:14px;">
+  <select id="goalCategorySelect" style="width:100%;box-sizing:border-box;padding:11px 12px;margin-bottom:14px;border-radius:10px;border:1px solid #232838;background:#6b7280;color:#ffffff;font-size:14px;">
    <option value="">— Select category —</option>
    <option value="Auto">Auto</option>
    <option value="Food">Food</option>
@@ -5977,10 +6155,10 @@ window.addEventListener('offline', () => {
   </select>
 
   <label style="display:block;color:#ffffff85;font-size:12px;margin-bottom:6px;">Monthly Savings Goal (₹)</label>
-  <input id="goalSavingsInput" type="number" placeholder="e.g. 5000" style="width:100%;box-sizing:border-box;padding:11px 12px;margin-bottom:14px;border-radius:10px;border:1px solid #232838;background:#00000085;color:#e8eaf0;font-size:14px;">
+  <input id="goalSavingsInput" type="number" placeholder="e.g. 5000" style="width:100%;box-sizing:border-box;padding:11px 12px;margin-bottom:14px;border-radius:10px;border:1px solid #232838;background:#6b7280;color:#ffffff;font-size:14px;">
 
   <label style="display:block;color:#ffffff85;font-size:12px;margin-bottom:6px;">Monthly Expense Limit (₹)</label>
-  <input id="goalExpenseInput" type="number" placeholder="e.g. 20000" style="width:100%;box-sizing:border-box;padding:11px 12px;margin-bottom:14px;border-radius:10px;border:1px solid #232838;background:#00000085;color:#e8eaf0;font-size:14px;">
+  <input id="goalExpenseInput" type="number" placeholder="e.g. 20000" style="width:100%;box-sizing:border-box;padding:11px 12px;margin-bottom:14px;border-radius:10px;border:1px solid #232838;background:#6b7280;color:#ffffff;font-size:14px;">
 
   <label style="display:flex;align-items:center;gap:8px;margin-bottom:18px;cursor:pointer;">
    <input id="goalNotifyToggle" type="checkbox" style="accent-color:#e8b64c;width:16px;height:16px;">
@@ -6015,8 +6193,9 @@ window.addEventListener('offline', () => {
    <button type="button" id="customGoalTypeExpenseBtn" onclick="setCustomGoalType('expense')" style="flex:1;padding:9px 0;border-radius:8px;border:1px solid #f6b042;background:rgba(246,176,66,.12);color:#f6b042;font-size:12.5px;font-weight:600;cursor:pointer;">Payment</button>
   </div>
   <label style="display:block;color:#8b9099;font-size:11px;margin-bottom:4px;">Category</label>
-  <select id="customGoalCategorySelect" style="width:100%;box-sizing:border-box;padding:10px 12px;margin-bottom:10px;border-radius:8px;border:1px solid #232838;background:#0d1117;color:#e8eaf0;font-size:13.5px;cursor:pointer;">
-   <option value="Auto">Auto</option>
+  <select id="customGoalCategorySelect" style="width:100%;box-sizing:border-box;padding:10px 12px;margin-bottom:10px;border-radius:8px;border:1px solid #232838;background:#6b7280;color:#e8eaf0;font-size:13.5px;cursor:pointer;">
+  <option value="Auto">— Select category-</option>
+  <option value="Auto">Auto</option>
    <option value="Food">Food</option>
    <option value="Medicin">Medicin</option>
    <option value="Travel">Travel</option>
